@@ -1,0 +1,59 @@
+from codecs import utf_8_encode
+import operator
+import urllib.request
+
+def fileread(doc):
+    file = open(doc, "r")
+    read_data = file.read()
+    file.close()
+    return read_data
+
+def tokenize(text):
+    text2 = text 
+    punctiuations = [",", ".", "!", "?", "/", ":", "*"]
+    for i in punctiuations:                       # tar bort specifika tecken
+        text2 = text2.replace(i, "")
+    
+    #for i in text2:                               #tar bort siffror
+        if i.isalpha() == False:
+            if i.isspace() == False:
+                text2 = text2.replace(i, "")
+    text2 = text2.lower()                         #tar bort alla stora bokstäver
+    text2 = text2.split()                         #gör texten till en lista
+    text2.sort()                                  #sorterar i bokstavsordning
+    return text2                                  #skickar tillbaka utan punctuation, siffror och allt i smått
+
+def countWords(list):
+    dict = {}                                     
+    for i in list:                                
+        if i in dict:                             
+            dict[i] = dict[i] + 1                 
+        elif i not in dict:                       
+            dict[i] = 1                           
+    sorteddict = sorted(dict.items(), key = operator.itemgetter(1), reverse = True)
+    return sorteddict                             
+
+def output(sorteddict, nofwords):
+    for i in range(nofwords):
+        word, count = sorteddict[i]
+        print("{0:<15}{1:>5}".format(word, count))
+
+#länk = str(input("Copy in a link from 'grammaticalframework.org': "))
+mustcontain = "grammaticalframework.org/~krasimir/"
+#if mustcontain in länk:
+#    print("Link is valid")
+url = "http://www.grammaticalframework.org/~krasimir/pg10900.txt"
+if mustcontain in url:
+    print("Link is valid")
+else:
+    print("Enter a valid link")
+file = "testing.txt"
+response = urllib.request.urlopen(url)
+lines = response.read().decode("utf8")
+#print(lines)
+filelist = fileread(file)
+text = tokenize(lines)                            
+dict = countWords(text)
+n = 10
+output(dict, n)
+print("End of line")
